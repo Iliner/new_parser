@@ -75,6 +75,41 @@ class ParserCore:
     return dict_with_url
 
 
+
+  def parser_ph_tools(self, dict):
+    l = 0
+    dict_with_url = {}
+    for code, value in dict.items():
+      l += 1
+      if l <=10:
+        #print(key,value, '---------------------------------')
+        url = requests.get('http://th-tool.by/index.php?route=product/search&search=' + code) # Страница с которого мы будем парсить в конце меняем на нужный нам код
+        soup = BeautifulSoup(url.text, 'html.parser')
+        searcher = soup.find_all('a')
+        #print(searcher)
+        #print(searcher)
+        for i in searcher:
+          #print('i ' + str(i))
+          if(i.get('href')):
+            var = i.get('href').find(code)
+            #print(var)
+            if(var >= 0):
+              url = requests.get(i.get('href'))  # Страница с которого мы будем парсить в конце меняем на нужный нам код
+              soup = BeautifulSoup(url.text, 'html.parser')
+              try:
+                div = soup.find('div', {'class': 'image'}).next
+                href_photo = div.get('href')
+                #print('many_photo ' + str(div))
+                # print(dict_with_url)
+                # print(href_photo, code, value[1])
+                dict_with_url[href_photo] = (code, value[1])
+              except AttributeError as err:
+                #print('нет такого изображение пропускаем  ' + key + value)
+                continue
+    self.dict_for_download = dict_with_url
+    return dict_with_url
+
+
   def download(self):
     if self.dict_for_download:
       for link, data in self.dict_for_download.items():
@@ -152,15 +187,15 @@ dict_with_brands = {
 }
 
 
-first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
-first.add_dict(dict_with_brands)
-my_dict =  first.csv_reader()
+# first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
+# first.add_dict(dict_with_brands)
+# my_dict =  first.csv_reader()
+# # for key in my_dict:
+# #     if key == 'th-tool.by':
+# #       first.parser_ph_tools(my_dict[key])
+
+# # first.download()
+
 # for key in my_dict:
-#     if key == 'th-tool.by':
-#       first.parser_ph_tools(my_dict[key])
-
-# first.download()
-
-for key in my_dict:
-  if key == 'tools.by':
-    print(my_dict[key])
+#   if key == 'tools.by':
+#     print(my_dict[key])
