@@ -105,6 +105,55 @@ class ParserCore:
 
 
 
+  def parser_h_d(self, dict):   
+    l = 0
+    dict_with_url = {}
+    for code, value in dict.items():
+      l += 1
+      if l < 10:
+        url = requests.get('http://h-d.by/buscar?orderby=position&orderway=desc&search_query={}&submit_search='.format(value[0])) # Страница с которого мы будем парсить в конце меняем на нужный нам код
+        soup = BeautifulSoup(url.text, 'html.parser')
+        try:
+          searcher = soup.find('div', class_='center_block')
+          searcher = searcher.find('a', class_='product_img_link')
+          href_for_big_photo = searcher.get('href')
+          url = requests.get(href_for_big_photo)
+          soup = BeautifulSoup(url.text, 'html.parser')
+          searcher = soup.find('div', class_='image-block').find('img')
+          href_photo = searcher.get('src')
+        except AttributeError as err:
+          print('Произошла ошибка или нет такого товара вообще: ' + value[0])
+          continue
+        else:
+          dict_with_url[href_photo] = (code, value[1])
+    self.dict_for_download = dict_with_url
+    return dict_with_url
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   def download(self, path):
@@ -157,21 +206,6 @@ class ParserCore:
 
 
 
-  # def csv_reader(self):
-  #   file = open('OptOnline.csv', 'r')
-  #   reader = csv.reader(file)
-  #   for row in reader:
-  #     for keys, values in self.dict_with_brands.items():
-  #       for value in values:
-  #         brand, value = self.__cosmetic(row[2], value)
-  #         if brand == value:
-  #           print((keys, row[1], row[3]))
-
-
-
-
-
-
 
 
 
@@ -189,6 +223,6 @@ first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_artic
 first.add_dict(dict_with_brands)
 my_dict =  first.csv_reader()
 for key in my_dict:
-    if key == 'tools.by':
-      first.parser_tools(my_dict[key])
+    if key == 'h-d.by':
+      first.parser_h_d(my_dict[key])
 first.download('./phot/')
