@@ -17,6 +17,8 @@ class ParserCore:
     self.field_article = field_article
     self.field_producer = field_producer
     self.dict_for_download = {}
+  
+
   def add_dict(self, my_dict):
     if type(my_dict) == dict:
       self.dict_with_data = my_dict
@@ -41,7 +43,7 @@ class ParserCore:
            
 
 
-  def parser_ph_tools(self, dict):
+  def parser_th_tools(self, dict):
     l = 0
     dict_with_url = {}
     for code, value in dict.items():
@@ -76,44 +78,40 @@ class ParserCore:
 
 
 
-  def parser_ph_tools(self, dict):
+  def parser_tools(self, dict):
     l = 0
     dict_with_url = {}
     for code, value in dict.items():
-      l += 1
-      if l <=10:
-        #print(key,value, '---------------------------------')
-        url = requests.get('http://th-tool.by/index.php?route=product/search&search=' + code) # Страница с которого мы будем парсить в конце меняем на нужный нам код
+        url = requests.get('http://www.tools.by/?q=kat&part=1&keys=' + value[0]) # Страница с которого мы будем парсить в конце меняем на нужный нам код
         soup = BeautifulSoup(url.text, 'html.parser')
-        searcher = soup.find_all('a')
-        #print(searcher)
-        #print(searcher)
-        for i in searcher:
-          #print('i ' + str(i))
-          if(i.get('href')):
-            var = i.get('href').find(code)
-            #print(var)
-            if(var >= 0):
-              url = requests.get(i.get('href'))  # Страница с которого мы будем парсить в конце меняем на нужный нам код
-              soup = BeautifulSoup(url.text, 'html.parser')
-              try:
-                div = soup.find('div', {'class': 'image'}).next
-                href_photo = div.get('href')
-                #print('many_photo ' + str(div))
-                # print(dict_with_url)
-                # print(href_photo, code, value[1])
-                dict_with_url[href_photo] = (code, value[1])
-              except AttributeError as err:
-                #print('нет такого изображение пропускаем  ' + key + value)
-                continue
+        try:
+          searcher = soup.find('tr', class_='subtitle odd').next_sibling.next_sibling
+          searcher = searcher.find('td')
+          find_need_data = searcher.find('a', class_='zzoom')
+          find_need_data = find_need_data.get('big')
+          link = 'http://www.tools.by' + find_need_data
+          url = requests.get(link)
+          soup = BeautifulSoup(url.text, 'html.parser')
+          else_searcher = soup.find('img')
+          else_searcher = else_searcher.get('src')
+          href_photo = 'http://www.tools.by' + else_searcher
+        except AttributeError as err:
+          print('Произошла ошибка или нет такого товара вообще: ' + value[0])
+          continue
+        else:
+          dict_with_url[href_photo] = (code, value[1])
     self.dict_for_download = dict_with_url
     return dict_with_url
 
 
-  def download(self):
+
+
+
+  def download(self, path):
     if self.dict_for_download:
       for link, data in self.dict_for_download.items():
         url = link
+        print('download', link)
         get_photo = requests.get(link)
         #format_photo = url.rsplit('.', maxsplit=1)
         #name_photo = format_photo[0].rsplit('/')[-1]
@@ -121,7 +119,7 @@ class ParserCore:
         format_photo = url.rsplit('.', maxsplit=1)[-1]
         full_name = data[0] + "." + format_photo
         try:
-         file = open('./photos/' + full_name, 'wb')
+         file = open(path + full_name, 'wb')
          #file = open('./test/' + full_name, 'wb')
          #file = open('./Yato_img/' + full_name, 'wb')
          file.write(get_photo.content)
@@ -187,15 +185,10 @@ dict_with_brands = {
 }
 
 
-# first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
-# first.add_dict(dict_with_brands)
-# my_dict =  first.csv_reader()
-# # for key in my_dict:
-# #     if key == 'th-tool.by':
-# #       first.parser_ph_tools(my_dict[key])
-
-# # first.download()
-
-# for key in my_dict:
-#   if key == 'tools.by':
-#     print(my_dict[key])
+first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
+first.add_dict(dict_with_brands)
+my_dict =  first.csv_reader()
+for key in my_dict:
+    if key == 'tools.by':
+      first.parser_tools(my_dict[key])
+first.download('./phot/')
