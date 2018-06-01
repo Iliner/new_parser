@@ -102,20 +102,32 @@ import random
 
 
 
-class Solder:
-	def __init__(self, number, team):
-		self.team = team
-		self.number = number
+
+
+class Character:
+	uniq_number = 0	
+	def __init__(self, team_number):
+		self.team_number = team_number
+		Character.uniq_number += 1
+		self.number = Character.uniq_number
+
+
+
+
+
+class Solder(Character):
 
 	def to_hero(self, hero):
 		return hero.number, self.number
 
-class Hero:
-	def __init__(self, number, team_number, team): # Если сдесь обьявить team=[] то почему то у нас список не сбрасывается для каждого отдельного экземпляра.
-		self.team_number = team_number
-		self.number = number
+
+
+class Hero(Character):
+	
+	def __init__(self, team_number): # Если сдесь обьявить team=[] то почему то у нас список не сбрасывается для каждого отдельного экземпляра.
+		super(Hero, self).__init__(team_number)
 		self.lvl = 0
-		self.team = team
+		self.team = []
 
 	def up_lvl(self):
 		self.lvl += 1
@@ -126,23 +138,109 @@ class Hero:
 	def look_count_team(self):
 		return len(self.team)
 
-hero_team_first = Hero(1, 1, [])
-hero_team_second = Hero(2, 2, [])
-count = 0
-while count < 10:
-	team_for_solder = random.randrange(1, 3)
-	number_for_solder = random.random()
-	if team_for_solder == 1:
-		hero_team_first.add_solder(Solder(number_for_solder, team_for_solder))
-	else:
-		hero_team_second.add_solder(Solder(number_for_solder, team_for_solder))
-	count += 1	
+
+a = Hero(1)
+
+
+# hero_team_first = Hero(1, 1, [])
+# hero_team_second = Hero(2, 2, [])
+# count = 0
+# while count < 10:
+# 	team_for_solder = random.randrange(1, 3)
+# 	number_for_solder = random.random()
+# 	if team_for_solder == 1:
+# 		hero_team_first.add_solder(Solder(number_for_solder, team_for_solder))
+# 	else:
+# 		hero_team_second.add_solder(Solder(number_for_solder, team_for_solder))
+# 	count += 1	
 
 
 
-if hero_team_first.look_count_team() > hero_team_second.look_count_team():
-	hero_team_first.up_lvl()
-else:
-	hero_team_second.up_lvl()
+# if hero_team_first.look_count_team() > hero_team_second.look_count_team():
+# 	hero_team_first.up_lvl()
+# else:
+# 	hero_team_second.up_lvl()
 
-print(hero_team_first.team[0].to_hero(hero_team_first))
+# print(hero_team_first.team[0].to_hero(hero_team_first))
+
+
+
+
+
+
+# class A:
+# 	def __init__(self, n):
+# 		self.number  = n
+
+
+# 	def __add__(self, obj):
+# 		self.number = self.number + obj.number
+# 		return self.number 
+
+# class B:
+
+# 	def __init__(self, n):
+# 		self.number  = n
+
+# 	def __add__(self, obj):
+# 		self.number = self.number + obj.number
+# 		return self.number 
+
+# first = A(2)
+# second = B(3)
+
+# print(first + second
+
+
+
+
+
+
+
+
+
+# class Solder:
+# 	def __init__(self, number, team):
+# 		self.team = team
+# 		self.number = number
+
+# 	def to_hero(self, hero):
+# 		return hero.number, self.number
+
+# class Hero:
+# 	def __init__(self, number, team_number, team): # Если сдесь обьявить team=[] то почему то у нас список не сбрасывается для каждого отдельного экземпляра.
+# 		self.team_number = team_number
+# 		self.number = number
+# 		self.lvl = 0
+# 		self.team = team
+
+# 	def up_lvl(self):
+# 		self.lvl += 1
+
+# 	def add_solder(self, solder):
+# 		return self.team.append(solder)
+
+# 	def look_count_team(self):
+# 		return len(self.team)
+
+# hero_team_first = Hero(1, 1, [])
+# hero_team_second = Hero(2, 2, [])
+# count = 0
+# while count < 10:
+# 	team_for_solder = random.randrange(1, 3)
+# 	number_for_solder = random.random()
+# 	if team_for_solder == 1:
+# 		hero_team_first.add_solder(Solder(number_for_solder, team_for_solder))
+# 	else:
+# 		hero_team_second.add_solder(Solder(number_for_solder, team_for_solder))
+# 	count += 1	
+
+
+
+# if hero_team_first.look_count_team() > hero_team_second.look_count_team():
+# 	hero_team_first.up_lvl()
+# else:
+# 	hero_team_second.up_lvl()
+
+# print(hero_team_first.team[0].to_hero(hero_team_first))
+
