@@ -203,8 +203,9 @@ class ParserCore:
 
 
 
-  def work_request(self):
-    pass
+  # def work_request(self, link):
+  #   url = link
+  #   get_photo = requests.get(link)
 
 
   def clear_dict_for_download(self):
@@ -241,15 +242,6 @@ if __name__ == '__main__':
          'FORSAGE kids', 'HCB', 'JTC', 'KINGTUL', 'KingTul kraft', 'KINGTUL profi', 'KINGTUL(SK)', 'M7', 'MARSHAL', 'Partner', 'Prowin', 'Rotake']
   }
 
-
-  # first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
-  # first.add_dict_with_brand(dict_with_brands)
-  # #my_dict =  first.csv_reader()
-  # first.parser_th_tools()
-  # # for key in my_dict:
-  # #     if key == 'th-tool.by':
-  # #       first.parser_th_tools(my_dict[key])
-  # first.download('./phot/')
 
   first  = ParserCore('OptOnline.csv', field_code=1, field_producer=2, field_article=3)
   first.add_dict_with_brand(dict_with_brands)
